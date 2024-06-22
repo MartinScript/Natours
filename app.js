@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
@@ -26,6 +27,14 @@ app.use((req, res, next) => {
     next();
 });
 
+//implementing rate-limiting
+const limiter = rateLimit({
+    max: 100,
+    windowMs: 60 * 60 * 1000,
+    message: 'Too many requests from this IP, please try again in an hour!'
+});
+
+app.use('/api', limiter);
 //get methods
 // app.get('/', (req, res) => {
 //     res.status(200).send('Hello, world!');
