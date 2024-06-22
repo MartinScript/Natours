@@ -14,6 +14,13 @@ exports.getAllUsers = catchAsync(async (req, res) => {
     });
 });
 
+exports.updateMe = (req, res, next) => {
+    //create error if user post password
+    if (req.body.password || req.body.passwordCurrent) {
+
+    }
+}
+
 exports.getUser = (req, res) => {
     req.status(500).json({ status: 'error', message: 'this url is not yet defined' });
 };
