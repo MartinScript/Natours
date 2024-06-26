@@ -15,17 +15,17 @@ const tourSchema = new mongoose.Schema({
         required: [true, 'A tour must have a price']
     },
     priceDiscount: {
-        type: Number,
-        summary: {
-            type: String,
-            trim: true,
-        },
-        validate: {
+        type: Number, validate: {
             validator: function (val) {
                 return val < this.price;
             },
             message: 'Discount ({VALUE}) must be below regular price'
         }
+    },
+    summary: {
+        type: String,
+        trim: true,
+        required: [true, 'A tour must have a description']
     },
     duration: {
         type: Number,
@@ -56,12 +56,41 @@ const tourSchema = new mongoose.Schema({
     description: {
         type: String,
         trim: true,
-        required: [true, 'A tour must have a description']
     },
+    startDates: [Date],
     secretTour: {
         type: Boolean,
         default: false,
     },
+    startLocation: {
+        type: {
+            type: String,
+            default: 'Point',
+            enum: ['Point']
+        },
+        cordinate: [Number],
+        address: String,
+        description: String
+    },
+    locations: [
+        {
+            type: {
+                type: String,
+                default: 'Point',
+                enum: ['Point']
+            },
+            cordinate: [Number],
+            address: String,
+            description: String,
+            day: Number
+        }
+    ],
+    guides: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User'
+        }
+    ],
     imageCover: {
         type: String,
         required: [true, 'A tour must have a cover image']
@@ -81,7 +110,14 @@ const tourSchema = new mongoose.Schema({
 tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7;
 });
-//Mongoose Middleware
+//Virtual Populate
+tourSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'review',
+    localField: '_id'
+});
+
+//Mongoose  Query Middleware
 // tourSchema.pre('save', function (next) {
 //     this.slug = slugify(this.name, { toLower: true });
 //     next();
@@ -93,9 +129,16 @@ tourSchema.pre(/^find/, function (next) {
     next();
 });
 
-tourSchema.post(/^find/, function (doc, next) {
+tourSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: 'guides',
+        select: '-__v -passwordChangedAt'
+    })
+    next();
+});
+
+tourSchema.post(/^find/, function (docS, next) {
     console.log(`query took ${Date.now() - this.start} milliseconds`);
-    console.log(docs);
     next();
 });
 
