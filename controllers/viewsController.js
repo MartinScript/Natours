@@ -17,7 +17,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.getOverview = catchAsync(async (req, res) => {
+exports.getOverview = catchAsync(async (req, res, next) => {
     //Get tour data from collection
     const tours = await Tour.find();
 
@@ -29,3 +29,11 @@ exports.getOverview = catchAsync(async (req, res) => {
         tours
     });
 });
+
+exports.getLoginForm = catchAsync(async (req, res, next) => {
+
+
+    res.status(200).render('login', {
+        title: 'Login into your account',
+    });
+})
