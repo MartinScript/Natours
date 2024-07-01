@@ -63,6 +63,16 @@ exports.login = catchAsync(async (req, res, next) => {
     createSendToken(user, 200, res);
 });
 
+exports.logout = (req, res) => {
+    const cookieOptions = {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true
+    };
+
+    res.cookie('jwt', 'logout', cookieOptions);
+    res.status(200).json({ status: 'success' })
+};
+
 exports.protect = catchAsync(async (req, res, next) => {
     //1, Get token and check presence
     let token;
@@ -86,6 +96,7 @@ exports.protect = catchAsync(async (req, res, next) => {
         return next(new AppError('User recently changed password, log in again', 401));
     }
     req.user = currentUser;
+    res.locals.user = currentUser;
     next();
 });
 

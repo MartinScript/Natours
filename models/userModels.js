@@ -46,7 +46,8 @@ const userSchema = new mongoose.Schema({
         select: false
     },
     photo: {
-        type: String
+        type: String,
+        default: 'default.jpg'
     }
 });
 

@@ -47,6 +47,10 @@ app.use('/api', limiter);
 app.use(express.json({
     limit: '10kb'
 }));
+app.use(express.urlencoded({
+    extended: true,
+    limit: '10kb'
+}));
 //Cookies parser
 app.use(cookieParser());
 
@@ -69,7 +73,7 @@ app.use(hpp({
 //creating your own middleware
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
-    console.log(req.cookies);
+    // console.log(req.cookies);
     next();
 });
 
